@@ -66,20 +66,22 @@ public class PlaylistService {
     }
 
     public void darLike(long id) {
-        videos.stream()
-                .filter(v -> v.getId() == id)
-                .findFirst()
-                .ifPresent(v -> v.setLikes(v.getLikes() + 1));
+        Video v = buscarPorId(id);
+        if (v != null) {
+            v.setLikes(v.getLikes() + 1);
+        }
         guardarEnArchivo();
     }
 
+
     public void toggleFavorito(long id) {
-        videos.stream()
-                .filter(v -> v.getId() == id)
-                .findFirst()
-                .ifPresent(v -> v.setFavorito(!v.isFavorito()));
+        Video v = buscarPorId(id);
+        if (v != null) {
+            v.setFavorito(!v.isFavorito());
+        }
         guardarEnArchivo();
     }
+
 
     // --------- Métodos privados de apoyo ---------
 
@@ -87,6 +89,14 @@ public class PlaylistService {
         Video v = new Video(nextId++, titulo, url);
         videos.add(v);
     }
+
+    private Video buscarPorId(long id) {
+        return videos.stream()
+                .filter(v -> v.getId() == id)
+                .findFirst()
+                .orElse(null);
+    }
+
 
     private void cargarDesdeArchivo() {
         if (!habilitarPersistencia) return;
